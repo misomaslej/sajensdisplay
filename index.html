@@ -3,11 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Display</title>
+    <title>Fetch Blue Team Data</title>
 </head>
 <body>
-    <p id="tokenDisplay">Loading Sájens tokeny...</p>
+    <h1>Blue Team Data</h1>
+    <div id="output"></div>
 
-    <script src="updateToken.js"></script>
+    <script>
+        // Replace with the correct cookie value
+        const cookieValue = "_scm_session=AGWcHsBr7Ca7S4%2B5oX0NqLl6cbj5Qo%2FPGHwl617%2FxPrtzvzywMDGvs%2BQbHK7dwD2%2BLJnSeDwyaGoVthWhh%2BFQs541ZQuTB02ODk2kEFyJHvHLFj0aeBPs4wLyGZewfHWvdvNNg9CSaacZA0cEwDsiInrmqu3LHPZ2Kn%2B0Qi2uJuZQ5sc6%2F9lcg080QewL1cQEl6GdcZDuEpxp6yvuXf9TPDdsh%2Bo9Zz4SQ2ZArGuTRO4MJnp6uHq8h%2FGQy3p8N1N3geicr3FEY48jge6IlWaWzT3i3GRG30kEt%2F9hu52gJzq73TxfkcAM%2Fbs77AvIK5hMccx6b3exWqo9HMFTBA%2FCcQgAzF2hylRcZikqElvvVmGQDMDFxEHWpx%2FmAowaVD9%2FoRMazdQVH3N%2BqCNelRpapHY7OCMhkrPw%2FlVMea%2BvUwkVe3GLX1aec6C%2BoUm%2FtYQ90gGbA%3D%3D--7oEi5opn3C2GS%2Fx4--dcwBewI2zbg%2B7%2Fwpl9FccQ%3D%3D";
+
+        async function fetchBlueTeamData() {
+            try {
+                const response = await fetch('https://scm.lstme.sk/map.json', {
+                    method: 'GET',
+                    headers: {
+                        'Cookie': cookieValue
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Assuming the structure of JSON includes blue_team inside some root structure
+                const blueTeam = data.blue_team; 
+
+                if (blueTeam) {
+                    const outputDiv = document.getElementById('output');
+                    
+                    // Iterate over each key-value pair in blue_team and display it
+                    let htmlContent = '<ul>';
+                    for (const [key, value] of Object.entries(blueTeam)) {
+                        htmlContent += `<li><strong>${key}:</strong> ${JSON.stringify(value)}</li>`;
+                    }
+                    htmlContent += '</ul>';
+                    outputDiv.innerHTML = htmlContent;
+
+                } else {
+                    document.getElementById('output').textContent = "Blue Team data not found.";
+                }
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('output').textContent = "Failed to fetch data.";
+            }
+        }
+
+        // Call the function on page load
+        fetchBlueTeamData();
+    </script>
 </body>
 </html>
